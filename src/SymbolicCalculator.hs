@@ -2,25 +2,26 @@ module SymbolicCalculator where
 
 import           Data.Char
 
-data Operator = Plus | Minus | Times | Div
-   deriving (Show, Eq)
-
 data Token = TokOp Operator
            | TokIdent String
            | TokNum Int
-           | TokSpace
            deriving (Show, Eq)
+
+showContent :: Token -> String
+showContent (TokOp    op ) = opToStr op
+showContent (TokIdent str) = str
+showContent (TokNum   i  ) = show i
+
+data Expression
+
+data Operator = Plus | Minus | Times | Div
+   deriving (Show, Eq)
 
 operator :: Char -> Operator
 operator c | c == '+' = Plus
            | c == '-' = Minus
            | c == '*' = Times
            | c == '/' = Div
-
-showContent :: Token -> String
-showContent (TokOp    op ) = opToStr op
-showContent (TokIdent str) = str
-showContent (TokNum   i  ) = show i
 
 opToStr :: Operator -> String
 opToStr Plus  = "+"
@@ -29,14 +30,18 @@ opToStr Times = "*"
 opToStr Div   = "/"
 
 tokenize :: String -> [Token]
-tokenize = map tokenizeChar
+tokenize [] = []
+tokenize (c : cs) | c `elem` "+-*/" = TokOp (operator c) : tokenize cs
+                  | isDigit c       = TokNum (digitToInt c) : tokenize cs
+                  | isAlpha c       = TokIdent [c] : tokenize cs
+                  | isSpace c       = tokenize cs
+                  | otherwise       = error $ "Cannot tokenize " ++ [c]
 
-tokenizeChar :: Char -> Token
-tokenizeChar c | c `elem` "+-*/" = TokOp (operator c)
-               | isDigit c       = TokNum (digitToInt c)
-               | isAlpha c       = TokIdent [c]
-               | isSpace c       = TokSpace
-               | otherwise       = error $ "Cannot tokenize " ++ [c]
+parse :: [Token] -> Expression
+parse = undefined
 
-deSpace :: [Token] -> [Token]
-deSpace = filter (/= TokSpace)
+evaluate :: Expression -> Double
+evaluate = undefined
+
+token :: Token
+token = TokIdent "x"
