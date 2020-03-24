@@ -41,25 +41,23 @@ number :: Char -> String -> [Token]
 number c cs =
    let (digs, cs') = digits cs in TokNum (read (c : digs)) : tokenize cs'
 
-digits :: String -> (String, String)
-digits str = digs "" str
+mySpan :: (a -> Bool) -> [a] -> ([a], [a])
+mySpan predicate = spanAcc []
  where
-  digs acc [] = (acc, [])
-  digs acc (c : cs)
-     | isDigit c = let (acc', cs') = digs acc cs in (c : acc', cs')
-     | otherwise = (acc, c : cs)
+  spanAcc acc [] = (acc, [])
+  spanAcc acc (c : cs)
+     | predicate c = let (acc', cs') = spanAcc acc cs in (c : acc', cs')
+     | otherwise   = (acc, c : cs)
+
+digits :: String -> (String, String)
+digits str = mySpan isDigit str
 
 identifier :: Char -> String -> [Token]
 identifier c cs =
    let (str, cs') = alnums cs in TokIdent (c : str) : tokenize cs'
 
 alnums :: String -> (String, String)
-alnums str = als "" str
- where
-  als acc [] = (acc, [])
-  als acc (c : cs)
-     | isAlphaNum c = let (acc', cs') = als acc cs in (c : acc', cs')
-     | otherwise    = (acc, c : cs)
+alnums str = mySpan isAlphaNum str
 
 parse :: [Token] -> Expression
 parse = undefined
