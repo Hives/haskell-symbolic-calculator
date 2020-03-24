@@ -3,6 +3,9 @@ module SymbolicCalculator where
 import           Data.Char
 
 data Token = TokOp Operator
+           | TokAssign
+           | TokLParen
+           | TokRParen
            | TokIdent String
            | TokNum Int
            deriving (Show, Eq)
@@ -32,6 +35,9 @@ opToStr Div   = "/"
 tokenize :: String -> [Token]
 tokenize [] = []
 tokenize (c : cs) | c `elem` "+-*/" = TokOp (operator c) : tokenize cs
+                  | c == '='        = TokAssign : tokenize cs
+                  | c == '('        = TokLParen : tokenize cs
+                  | c == ')'        = TokRParen : tokenize cs
                   | isDigit c       = number c cs
                   | isAlpha c       = identifier c cs
                   | isSpace c       = tokenize cs
