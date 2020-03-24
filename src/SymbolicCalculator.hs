@@ -39,25 +39,11 @@ tokenize (c : cs) | c `elem` "+-*/" = TokOp (operator c) : tokenize cs
 
 number :: Char -> String -> [Token]
 number c cs =
-   let (digs, cs') = digits cs in TokNum (read (c : digs)) : tokenize cs'
-
-mySpan :: (a -> Bool) -> [a] -> ([a], [a])
-mySpan predicate = spanAcc []
- where
-  spanAcc acc [] = (acc, [])
-  spanAcc acc (c : cs)
-     | predicate c = let (acc', cs') = spanAcc acc cs in (c : acc', cs')
-     | otherwise   = (acc, c : cs)
-
-digits :: String -> (String, String)
-digits str = mySpan isDigit str
+   let (digs, cs') = span isDigit cs in TokNum (read (c : digs)) : tokenize cs'
 
 identifier :: Char -> String -> [Token]
 identifier c cs =
-   let (str, cs') = alnums cs in TokIdent (c : str) : tokenize cs'
-
-alnums :: String -> (String, String)
-alnums str = mySpan isAlphaNum str
+   let (str, cs') = span isAlphaNum cs in TokIdent (c : str) : tokenize cs'
 
 parse :: [Token] -> Expression
 parse = undefined
