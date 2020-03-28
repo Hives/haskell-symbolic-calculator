@@ -6,7 +6,7 @@ Exercise from School of Haskell.
 
 ## Running it
 
-Do:
+Requires `stack`. Do this:
 
 ```
 > stack build
